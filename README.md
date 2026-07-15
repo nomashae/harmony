@@ -187,5 +187,4 @@ small, focused PRs against a single pipeline stage (lexer, parser, semantic
 analyzer, or codegen) rather than cross-cutting changes.
 
 ## License
-
-()
+MIT - Refer to License.
