@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Harmony — a grammar for state and view</title>
+<title>Harmony, a grammar for state and view</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
@@ -336,9 +336,9 @@ footer a:hover { color: var(--accent); }
     <a href="https://github.com/nomashae/harmony/" class="btn btn-secondary"><i class="fa-solid fa-code-branch"></i> Clone the repo</a>
   </div>
   <div class="rule-strip">
-    <span class="rule-chip">store / action → the only place state changes</span>
-    <span class="rule-chip">component → reads state, declares layout</span>
-    <span class="rule-chip">emit → the one checked bridge between them</span>
+    <span class="rule-chip">store / action > the only place state changes</span>
+    <span class="rule-chip">component > reads state, declares layout</span>
+    <span class="rule-chip">emit > the one checked bridge between them</span>
   </div>
 </div>
 
@@ -348,7 +348,7 @@ footer a:hover { color: var(--accent); }
     <div class="sec-header">
       <span class="sec-label">See It Run</span>
       <h2 class="sec-title">Compile it, click it, that's the whole loop</h2>
-      <p class="sec-sub">This is the actual counter app from the examples folder — clone the repo and run these three lines yourself</p>
+      <p class="sec-sub">This is the actual counter app from the examples folder, clone the repo and run these three lines yourself</p>
     </div>
     <div class="terminal-card">
       <div class="terminal-bar">
@@ -385,7 +385,7 @@ footer a:hover { color: var(--accent); }
     <div class="sec-header">
       <span class="sec-label">Why Harmony</span>
       <h2 class="sec-title">The separation is a grammar rule</h2>
-      <p class="sec-sub">Not a convention you can forget — a shape the parser won't let you break</p>
+      <p class="sec-sub">Not a convention you can forget, a shape the parser won't let you break</p>
     </div>
     <div class="resp-grid">
       <div class="resp-card">
@@ -406,12 +406,12 @@ footer a:hover { color: var(--accent); }
       <div class="resp-card">
         <div class="resp-icon"><i class="fa-solid fa-puzzle-piece"></i></div>
         <div class="resp-title">Pluggable codegen</div>
-        <div class="resp-desc">The codegen backend only ever sees the validated, ownership-checked AST — never raw syntax. A second backend is additive, not a rewrite.</div>
+        <div class="resp-desc">The codegen backend only ever sees the validated, ownership-checked AST, never raw syntax. A second backend is additive, not a rewrite.</div>
       </div>
       <div class="resp-card">
         <div class="resp-icon"><i class="fa-solid fa-file-code"></i></div>
         <div class="resp-title">One self-contained file</div>
-        <div class="resp-desc">Build output is a single runnable .html file with an embedded reactive Store (subscribe/publish) — no bundler, no install step for the person running it.</div>
+        <div class="resp-desc">Build output is a single runnable .html file with an embedded reactive Store (subscribe/publish), no bundler, no install step for the person running it (unless advanced mode - coming soon).</div>
       </div>
       <div class="resp-card">
         <div class="resp-icon"><i class="fa-solid fa-bug"></i></div>
@@ -450,7 +450,7 @@ footer a:hover { color: var(--accent); }
     <div class="sec-header">
       <span class="sec-label">Where Things Stand</span>
       <h2 class="sec-title">Phase 1 status</h2>
-      <p class="sec-sub">An early, functional slice — not a complete language yet</p>
+      <p class="sec-sub">An early, functional slice. Not a complete language yet.</p>
     </div>
     <div class="status-cols">
       <div class="status-card done">
@@ -466,7 +466,7 @@ footer a:hover { color: var(--accent); }
       <div class="status-card next">
         <h3><i class="fa-solid fa-circle-notch"></i> What's not built yet</h3>
         <ul>
-          <li><i class="fa-solid fa-minus"></i> No native/Electron renderer — only the browser backend exists</li>
+          <li><i class="fa-solid fa-minus"></i> No native/Electron renderer, only the browser backend exists</li>
           <li><i class="fa-solid fa-minus"></i> No conditional rendering inside components</li>
           <li><i class="fa-solid fa-minus"></i> No list/map indexing</li>
           <li><i class="fa-solid fa-minus"></i> Re-render is whole-subtree replacement, not a VDOM diff</li>
@@ -491,14 +491,14 @@ footer a:hover { color: var(--accent); }
     <div class="sec-header">
       <span class="sec-label">Try It</span>
       <h2 class="sec-title">Get Harmony running in under a minute</h2>
-      <p class="sec-sub">Requires Node.js 16+. No bundling, no type inference, no optimization passes — just a tree-walk over a small AST</p>
+      <p class="sec-sub">Requires Node.js 16+. No bundling, no type inference, no optimization passes, just a tree-walk over a small AST</p>
     </div>
     <div class="cta-card">
       <h2>Clone it, build the counter app, click the button</h2>
       <p>That's the whole loop the compiler is built to prove out.</p>
       <div class="hero-ctas">
         <a href="https://github.com/nomashae/harmony/" class="btn btn-primary"><i class="fa-brands fa-github"></i> View the repo</a>
-        <a href="https://github.com/nomashae/harmony/blob/main/harmony_cheat_sheet.md" class="btn btn-secondary"><i class="fa-solid fa-book"></i> Read the cheat sheet</a>
+        <a href="https://github.com/nomashae/harmony/CHEAT SHEET.md" class="btn btn-secondary"><i class="fa-solid fa-book"></i> Read the cheat sheet</a>
       </div>
     </div>
   </div>
