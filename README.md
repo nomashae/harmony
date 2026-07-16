@@ -1,3 +1,4 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Goverment of Nomashae](https://img.shields.io/badge/The_Goverment_of-Nomashae-brightgreen?style=flat)](https://nomashae.org) [![Harmony Lang](https://img.shields.io/badge/Harmony-Lang-%23DDA0DD?labelColor=%237F00FF)](https://harmony.technology.nomashae.org)
 # Harmony
 
 # **Developed by The Goverment of Nomashae and The Ministry of Technology of The Republic of Nomashae**
