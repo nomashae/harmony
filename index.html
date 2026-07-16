@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Harmony — a grammar for state and view</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root {
+  --accent: #4A7C59;
+  --bg: #f7f7f5; --bg2: #efefec; --card: #ffffff;
+  --ink: #1a1a1a; --ink2: #555550;
+  --border: rgba(0,0,0,0.08); --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  --radius: 14px; --t: 0.3s ease;
+}
+[data-theme="dark"] {
+  --bg: #141414; --bg2: #1e1e1e; --card: #242424;
+  --ink: #f0f0ee; --ink2: #999992;
+  --border: rgba(255,255,255,0.08); --shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+[data-element="air"]   { --accent: #5B9BBF; }
+[data-element="water"] { --accent: #3A8F8F; }
+[data-element="fire"]  { --accent: #C4622D; }
+[data-element="earth"] { --accent: #4A7C59; }
+[data-theme="dark"][data-element="air"]   { --accent: #7bb8d8; }
+[data-theme="dark"][data-element="water"] { --accent: #5abfbf; }
+[data-theme="dark"][data-element="fire"]  { --accent: #e07a4a; }
+[data-theme="dark"][data-element="earth"] { --accent: #6aad82; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg); color: var(--ink);
+  line-height: 1.7; transition: background var(--t), color var(--t);
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 2.5rem; height: 64px;
+  background: var(--bg); border-bottom: 1px solid var(--border);
+  transition: background var(--t), border-color var(--t);
+}
+.nav-left { display: flex; align-items: center; gap: 0.75rem; }
+.back-link {
+  display: flex; align-items: center; gap: 0.5rem;
+  text-decoration: none; color: var(--ink2);
+  font-size: 0.78rem; font-weight: 500; letter-spacing: 1px;
+  text-transform: uppercase; transition: color 0.2s;
+}
+.back-link:hover { color: var(--accent); }
+.back-link svg { width: 16px; height: 16px; fill: currentColor; }
+.nav-brand {
+  font-size: 1rem; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--accent); text-decoration: none;
+  transition: color var(--t);
+}
+.nav-right { display: flex; gap: 0.5rem; align-items: center; }
+.nav-btn {
+  background: transparent; border: 1.5px solid var(--border);
+  color: var(--ink2); padding: 0.35rem 0.9rem; border-radius: 8px;
+  cursor: pointer; font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 1px;
+  text-transform: uppercase; transition: all 0.2s;
+  text-decoration: none; display: inline-block;
+}
+.nav-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.nav-btn.solid { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* HERO */
+.hero {
+  padding: 5rem 2rem 3.5rem; text-align: center;
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+  transition: background var(--t), border-color var(--t);
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%);
+  pointer-events: none; transition: background var(--t);
+}
+.hero-ministry {
+  font-size: 0.65rem; font-weight: 600; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--accent); display: block;
+  margin-bottom: 0.5rem; transition: color var(--t);
+}
+.hero-icon {
+  width: 72px; height: 72px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: 18px; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.5rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  transition: background var(--t), border-color var(--t);
+}
+.hero-icon i { font-size: 1.8rem; color: var(--accent); transition: color var(--t); }
+.hero-title {
+  font-size: clamp(2.2rem, 7vw, 4rem); font-weight: 700;
+  color: var(--ink); letter-spacing: 2px; margin-bottom: 0.6rem;
+  transition: color var(--t);
+}
+.hero-sub {
+  font-size: 0.95rem; color: var(--ink2); font-weight: 300;
+  max-width: 560px; margin: 0 auto 1.75rem;
+  transition: color var(--t);
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  color: var(--accent); padding: 0.4rem 1rem; border-radius: 20px;
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; transition: all var(--t); margin-bottom: 2rem;
+}
+.hero-badge i { font-size: 0.6rem; }
+.hero-ctas { display: flex; gap: 0.85rem; justify-content: center; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  padding: 0.75rem 1.5rem; border-radius: 10px;
+  font-size: 0.82rem; font-weight: 600; letter-spacing: 0.5px;
+  text-decoration: none; cursor: pointer; border: 1.5px solid transparent;
+  transition: all 0.2s; font-family: 'Outfit', sans-serif;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.btn-secondary { background: transparent; color: var(--ink); border-color: var(--border); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+/* SECTIONS */
+.section { padding: 4.5rem 2rem; border-top: 1px solid var(--border); transition: border-color var(--t); }
+.section.alt { background: var(--bg2); transition: background var(--t), border-color var(--t); }
+.section-inner { max-width: 980px; margin: 0 auto; }
+.sec-header { text-align: center; margin-bottom: 2.5rem; }
+.sec-label {
+  font-size: 0.65rem; font-weight: 600; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--accent); display: block;
+  margin-bottom: 0.5rem; transition: color var(--t);
+}
+.sec-title {
+  font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 700;
+  color: var(--ink); letter-spacing: 1px; margin-bottom: 0.3rem;
+  transition: color var(--t);
+}
+.sec-sub { font-size: 0.85rem; color: var(--ink2); font-weight: 300; transition: color var(--t); }
+
+.fade { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.fade.in { opacity: 1; transform: none; }
+
+/* GRAMMAR RULE STRIP */
+.rule-strip {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;
+  margin-top: 1.75rem;
+}
+.rule-chip {
+  font-family: 'Courier New', monospace; font-size: 0.72rem;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--accent); padding: 0.4rem 0.8rem; border-radius: 8px;
+}
+
+/* TERMINAL (code preview) */
+.terminal-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+  transition: background var(--t), border-color var(--t);
+}
+.terminal-bar {
+  background: #1e2130; padding: 0.6rem 1rem;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.t-dot { width: 10px; height: 10px; border-radius: 50%; }
+.t-dot.red { background: #ff5f57; }
+.t-dot.yellow { background: #ffbd2e; }
+.t-dot.green { background: #28c840; }
+.t-label { font-size: 0.65rem; color: #666; margin-left: 0.5rem; letter-spacing: 1px; }
+.terminal-code {
+  background: #0f1117; padding: 1.4rem 1.6rem;
+  font-family: 'Courier New', monospace; font-size: 0.83rem;
+  line-height: 1.9; color: #cdd6f4; overflow-x: auto;
+}
+.t-comment { color: #6c7086; }
+.t-keyword { color: #cba6f7; }
+.t-string  { color: #a6e3a1; }
+.t-type    { color: #89b4fa; }
+.t-var     { color: #f38ba8; }
+.t-number  { color: #fab387; }
+.run-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.9rem 1.6rem; border-top: 1px solid rgba(255,255,255,0.06);
+  background: #14161d; flex-wrap: wrap; gap: 0.75rem;
+}
+.run-hint { font-size: 0.74rem; color: #8a8f9e; font-family: 'Courier New', monospace; }
+.copy-btn {
+  background: transparent; border: 1.5px solid rgba(255,255,255,0.15);
+  color: #cdd6f4; padding: 0.35rem 0.85rem; border-radius: 8px;
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; font-family: 'Outfit', sans-serif; transition: all 0.2s;
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* FEATURE GRID */
+.resp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.resp-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.8rem;
+  box-shadow: var(--shadow); position: relative; overflow: hidden;
+  transition: background var(--t), border-color var(--t), transform 0.25s, box-shadow 0.25s;
+}
+.resp-card::after {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: var(--accent); transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s ease, background var(--t);
+}
+.resp-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.1); }
+.resp-card:hover::after { transform: scaleX(1); }
+.resp-icon {
+  width: 40px; height: 40px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 1rem; transition: background var(--t);
+}
+.resp-icon i { font-size: 1rem; color: var(--accent); transition: color var(--t); }
+.resp-title { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin-bottom: 0.4rem; transition: color var(--t); }
+.resp-desc { font-size: 0.82rem; font-weight: 300; color: var(--ink2); line-height: 1.7; transition: color var(--t); }
+
+/* PIPELINE */
+.pipeline {
+  display: flex; align-items: stretch; gap: 0; flex-wrap: wrap;
+  justify-content: center;
+}
+.pipe-stage {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1.2rem 1.4rem; min-width: 150px;
+  box-shadow: var(--shadow); text-align: center;
+  transition: background var(--t), border-color var(--t);
+}
+.pipe-stage .n { font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; }
+.pipe-stage .s { font-size: 0.88rem; font-weight: 700; color: var(--ink); margin: 0.3rem 0; }
+.pipe-stage .d { font-size: 0.72rem; color: var(--ink2); font-weight: 300; }
+.pipe-arrow {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent); font-size: 1.1rem; padding: 0 0.6rem;
+  min-width: 32px;
+}
+@media (max-width: 900px) {
+  .pipeline { flex-direction: column; align-items: center; }
+  .pipe-arrow { transform: rotate(90deg); padding: 0.3rem 0; }
+}
+
+/* ROADMAP */
+.status-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+@media (max-width: 700px) { .status-cols { grid-template-columns: 1fr; } }
+.status-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.6rem; box-shadow: var(--shadow); transition: background var(--t), border-color var(--t);
+}
+.status-card h3 { font-size: 0.85rem; letter-spacing: 1px; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+.status-card ul { list-style: none; }
+.status-card li { font-size: 0.82rem; color: var(--ink2); font-weight: 300; padding: 0.4rem 0; display: flex; gap: 0.6rem; align-items: flex-start; }
+.status-card li i { margin-top: 0.25rem; font-size: 0.7rem; flex-shrink: 0; }
+.status-card.done h3 { color: var(--accent); }
+.status-card.done li i { color: var(--accent); }
+.status-card.next h3 { color: var(--ink2); }
+.status-card.next li i { color: var(--ink2); }
+
+.roadmap-list { max-width: 620px; margin: 1.75rem auto 0; }
+.roadmap-item {
+  display: flex; gap: 1rem; align-items: flex-start;
+  padding: 0.85rem 0; border-bottom: 1px solid var(--border);
+  transition: border-color var(--t);
+}
+.roadmap-item:last-child { border-bottom: none; }
+.roadmap-num {
+  font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--accent);
+  font-weight: 700; flex-shrink: 0; padding-top: 0.1rem;
+}
+.roadmap-text { font-size: 0.85rem; color: var(--ink2); font-weight: 300; }
+
+/* CTA / footer */
+.cta-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 2.5rem; text-align: center;
+  box-shadow: var(--shadow); transition: background var(--t), border-color var(--t);
+}
+.cta-card h2 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+.cta-card p { font-size: 0.85rem; color: var(--ink2); font-weight: 300; margin-bottom: 1.5rem; }
+
+footer {
+  border-top: 1px solid var(--border); text-align: center; padding: 2.5rem 1rem;
+  font-size: 0.68rem; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--ink2); transition: border-color var(--t), color var(--t);
+}
+footer a { color: var(--ink2); text-decoration: none; }
+footer a:hover { color: var(--accent); }
+
+@media (max-width: 600px) {
+  nav { padding: 0 1rem; }
+  .section { padding: 3rem 1.2rem; }
+  .terminal-code { font-size: 0.74rem; }
+}
+</style>
+</head>
+<body data-theme="light" data-element="earth">
+
+<nav>
+  <div class="nav-left">
+    <a href="http://ministries.nomashae.org" class="back-link">
+      <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      Ministries
+    </a>
+    <a href="https://harmony.technology.nomashae.org" class="nav-brand">Harmony</a>
+  </div>
+  <div class="nav-right">
+    <a href="https://github.com/nomashae/harmony/" class="nav-btn"><i class="fa-brands fa-github"></i>&nbsp; GitHub</a>
+    <button class="nav-btn" id="dark-btn">Dark</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-ministry">Ministry of Technology · Republic of Nomashae</span>
+  <div class="hero-icon"><i class="fa-solid fa-diagram-project"></i></div>
+  <h1 class="hero-title">Harmony</h1>
+  <p class="hero-sub">A small, indentation-based language for GUI apps where state and view are separated by grammar, not by convention. Compiles straight to a self-contained, runnable HTML/JS file.</p>
+  <div class="hero-badge"><i class="fa-solid fa-circle-dot"></i> Phase 1 · working compiler</div>
+  <div class="hero-ctas">
+    <a href="https://github.com/nomashae/harmony/" class="btn btn-primary"><i class="fa-solid fa-star"></i> Star on GitHub</a>
+    <a href="https://github.com/nomashae/harmony/" class="btn btn-secondary"><i class="fa-solid fa-code-branch"></i> Clone the repo</a>
+  </div>
+  <div class="rule-strip">
+    <span class="rule-chip">store / action → the only place state changes</span>
+    <span class="rule-chip">component → reads state, declares layout</span>
+    <span class="rule-chip">emit → the one checked bridge between them</span>
+  </div>
+</div>
+
+<!-- LIVE CODE / RUN IT YOURSELF -->
+<div class="section">
+  <div class="section-inner fade">
+    <div class="sec-header">
+      <span class="sec-label">See It Run</span>
+      <h2 class="sec-title">Compile it, click it, that's the whole loop</h2>
+      <p class="sec-sub">This is the actual counter app from the examples folder — clone the repo and run these three lines yourself</p>
+    </div>
+    <div class="terminal-card">
+      <div class="terminal-bar">
+        <div class="t-dot red"></div>
+        <div class="t-dot yellow"></div>
+        <div class="t-dot green"></div>
+        <span class="t-label">examples/counter_app.harm</span>
+      </div>
+      <div class="terminal-code">
+        <span class="t-keyword">store</span> <span class="t-var">CounterStore</span>:<br>
+        &nbsp;&nbsp;<span class="t-keyword">state</span> <span class="t-var">count</span>: <span class="t-type">Int</span> = <span class="t-number">0</span><br><br>
+        &nbsp;&nbsp;<span class="t-keyword">action</span> <span class="t-var">increment</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-var">count</span> += <span class="t-number">1</span><br><br>
+        <span class="t-keyword">component</span> <span class="t-var">CounterApp</span>:<br>
+        &nbsp;&nbsp;<span class="t-keyword">bind</span> <span class="t-var">count</span> <span class="t-keyword">from</span> <span class="t-var">CounterStore</span>.<span class="t-var">count</span><br><br>
+        &nbsp;&nbsp;Column(padding: <span class="t-number">16</span>, spacing: <span class="t-number">12</span>):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Text(text: f<span class="t-string">"Count: {count}"</span>, style: <span class="t-string">"heading"</span>)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;Button(label: <span class="t-string">"+"</span>, on_click: <span class="t-keyword">emit</span> <span class="t-var">CounterStore</span>.<span class="t-var">increment</span>)<br><br>
+        <span class="t-keyword">app</span> <span class="t-var">CounterDemo</span>:<br>
+        &nbsp;&nbsp;<span class="t-keyword">window</span>(title: <span class="t-string">"Counter"</span>, width: <span class="t-number">320</span>, height: <span class="t-number">200</span>):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-keyword">mount</span> <span class="t-var">CounterApp</span>
+      </div>
+      <div class="run-row">
+        <span class="run-hint">$ node bin/harmony.js build examples/counter_app.harm --out counter_app.html && open counter_app.html</span>
+        <button class="copy-btn" id="copy-run"><i class="fa-solid fa-copy"></i>&nbsp; Copy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURE GRID -->
+<div class="section alt">
+  <div class="section-inner fade">
+    <div class="sec-header">
+      <span class="sec-label">Why Harmony</span>
+      <h2 class="sec-title">The separation is a grammar rule</h2>
+      <p class="sec-sub">Not a convention you can forget — a shape the parser won't let you break</p>
+    </div>
+    <div class="resp-grid">
+      <div class="resp-card">
+        <div class="resp-icon"><i class="fa-solid fa-sitemap"></i></div>
+        <div class="resp-title">State Ownership Graph</div>
+        <div class="resp-desc">The semantic analyzer maps every state field to the store that owns it, then rejects any write that doesn't come through an action.</div>
+      </div>
+      <div class="resp-card">
+        <div class="resp-icon"><i class="fa-solid fa-eye"></i></div>
+        <div class="resp-title">Read-only components</div>
+        <div class="resp-desc">There is no statement syntax reachable from inside a component. "The view mutated global state" isn't a bug you can write, even by accident.</div>
+      </div>
+      <div class="resp-card">
+        <div class="resp-icon"><i class="fa-solid fa-link"></i></div>
+        <div class="resp-title">emit, checked at compile time</div>
+        <div class="resp-desc">The one bridge between state and view. Reference a store or action that doesn't exist and you get a SemanticError with a line number, not a runtime crash.</div>
+      </div>
+      <div class="resp-card">
+        <div class="resp-icon"><i class="fa-solid fa-puzzle-piece"></i></div>
+        <div class="resp-title">Pluggable codegen</div>
+        <div class="resp-desc">The codegen backend only ever sees the validated, ownership-checked AST — never raw syntax. A second backend is additive, not a rewrite.</div>
+      </div>
+      <div class="resp-card">
+        <div class="resp-icon"><i class="fa-solid fa-file-code"></i></div>
+        <div class="resp-title">One self-contained file</div>
+        <div class="resp-desc">Build output is a single runnable .html file with an embedded reactive Store (subscribe/publish) — no bundler, no install step for the person running it.</div>
+      </div>
+      <div class="resp-card">
+        <div class="resp-icon"><i class="fa-solid fa-bug"></i></div>
+        <div class="resp-title">Debuggable by design</div>
+        <div class="resp-desc">The tokens and ast CLI commands dump the lexer stream and parsed AST as JSON, so a confusing build error is easy to trace back to one node.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PIPELINE -->
+<div class="section">
+  <div class="section-inner fade">
+    <div class="sec-header">
+      <span class="sec-label">Under The Hood</span>
+      <h2 class="sec-title">Compiler pipeline</h2>
+      <p class="sec-sub">A from-scratch lexer, parser, AST, and semantic analyzer, feeding a pluggable codegen backend</p>
+    </div>
+    <div class="pipeline">
+      <div class="pipe-stage"><div class="n">01</div><div class="s">Lexer</div><div class="d">Indentation → explicit INDENT / DEDENT / NEWLINE tokens</div></div>
+      <div class="pipe-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <div class="pipe-stage"><div class="n">02</div><div class="s">Parser</div><div class="d">Recursive-descent + Pratt expression parsing</div></div>
+      <div class="pipe-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <div class="pipe-stage"><div class="n">03</div><div class="s">Semantic</div><div class="d">Builds the State Ownership Graph, enforces it</div></div>
+      <div class="pipe-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <div class="pipe-stage"><div class="n">04</div><div class="s">Codegen</div><div class="d">Walks the validated AST → HTML/JS backend</div></div>
+      <div class="pipe-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <div class="pipe-stage"><div class="n">05</div><div class="s">.html</div><div class="d">Self-contained, runnable in any browser</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ROADMAP / STATUS -->
+<div class="section alt">
+  <div class="section-inner fade">
+    <div class="sec-header">
+      <span class="sec-label">Where Things Stand</span>
+      <h2 class="sec-title">Phase 1 status</h2>
+      <p class="sec-sub">An early, functional slice — not a complete language yet</p>
+    </div>
+    <div class="status-cols">
+      <div class="status-card done">
+        <h3><i class="fa-solid fa-check-circle"></i> What's real</h3>
+        <ul>
+          <li><i class="fa-solid fa-check"></i> Full lexer with indentation and multi-line bracket continuation</li>
+          <li><i class="fa-solid fa-check"></i> Parser covering store / component / app, control flow, f-strings, lambdas</li>
+          <li><i class="fa-solid fa-check"></i> Compile-time enforcement of the state-ownership rule</li>
+          <li><i class="fa-solid fa-check"></i> Working HTML/JS backend with a reactive Store (subscribe/publish)</li>
+          <li><i class="fa-solid fa-check"></i> Verified end-to-end with simulated DOM events</li>
+        </ul>
+      </div>
+      <div class="status-card next">
+        <h3><i class="fa-solid fa-circle-notch"></i> What's not built yet</h3>
+        <ul>
+          <li><i class="fa-solid fa-minus"></i> No native/Electron renderer — only the browser backend exists</li>
+          <li><i class="fa-solid fa-minus"></i> No conditional rendering inside components</li>
+          <li><i class="fa-solid fa-minus"></i> No list/map indexing</li>
+          <li><i class="fa-solid fa-minus"></i> Re-render is whole-subtree replacement, not a VDOM diff</li>
+          <li><i class="fa-solid fa-minus"></i> No static type checking, no module system</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="roadmap-list">
+      <div class="roadmap-item"><span class="roadmap-num">01</span><span class="roadmap-text">Conditional rendering + list rendering inside components</span></div>
+      <div class="roadmap-item"><span class="roadmap-num">02</span><span class="roadmap-text">A real VDOM diff instead of subtree replacement</span></div>
+      <div class="roadmap-item"><span class="roadmap-num">03</span><span class="roadmap-text">A second codegen backend (native or WASM) to prove the pluggable-backend architecture</span></div>
+      <div class="roadmap-item"><span class="roadmap-num">04</span><span class="roadmap-text">Multi-file module system</span></div>
+      <div class="roadmap-item"><span class="roadmap-num">05</span><span class="roadmap-text">Optional static type checking</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- GET STARTED / CTA -->
+<div class="section">
+  <div class="section-inner fade">
+    <div class="sec-header">
+      <span class="sec-label">Try It</span>
+      <h2 class="sec-title">Get Harmony running in under a minute</h2>
+      <p class="sec-sub">Requires Node.js 16+. No bundling, no type inference, no optimization passes — just a tree-walk over a small AST</p>
+    </div>
+    <div class="cta-card">
+      <h2>Clone it, build the counter app, click the button</h2>
+      <p>That's the whole loop the compiler is built to prove out.</p>
+      <div class="hero-ctas">
+        <a href="https://github.com/nomashae/harmony/" class="btn btn-primary"><i class="fa-brands fa-github"></i> View the repo</a>
+        <a href="https://github.com/nomashae/harmony/blob/main/harmony_cheat_sheet.md" class="btn btn-secondary"><i class="fa-solid fa-book"></i> Read the cheat sheet</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Nomashae · Ministry of Technology · <a href="https://github.com/nomashae/harmony/">Harmony on GitHub</a> · MIT Licensed</p>
+</footer>
+
+<script>
+function getElement() {
+  const h = new Date().getHours();
+  if (h >= 6  && h < 12) return 'air';
+  if (h >= 12 && h < 18) return 'water';
+  if (h >= 18 && h < 22) return 'fire';
+  return 'earth';
+}
+document.body.setAttribute('data-element', getElement());
+
+const darkBtn = document.getElementById('dark-btn');
+let isDark = false;
+function applyDark() {
+  document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  darkBtn.classList.toggle('solid', isDark);
+  darkBtn.textContent = isDark ? 'Light' : 'Dark';
+}
+darkBtn.addEventListener('click', () => {
+  isDark = !isDark;
+  applyDark();
+});
+applyDark();
+
+const copyBtn = document.getElementById('copy-run');
+copyBtn.addEventListener('click', () => {
+  const cmd = 'node bin/harmony.js build examples/counter_app.harm --out counter_app.html && open counter_app.html';
+  navigator.clipboard.writeText(cmd).then(() => {
+    const original = copyBtn.innerHTML;
+    copyBtn.innerHTML = '<i class="fa-solid fa-check"></i>&nbsp; Copied';
+    setTimeout(() => { copyBtn.innerHTML = original; }, 1600);
+  });
+});
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>
